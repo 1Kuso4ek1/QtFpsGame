@@ -18,9 +18,9 @@ ExtendedSceneEnvironment {
     // lensFlareDistortion: 4
     ditheringEnabled: true
     // depthOfFieldEnabled: true
-    // depthOfFieldFocusDistance: 100
-    // depthOfFieldFocusRange: 20
-    // depthOfFieldBlurAmount: 8
+    // depthOfFieldFocusDistance: 400
+    // depthOfFieldFocusRange: 200
+    // depthOfFieldBlurAmount: 4
     /*fog: Fog {
         density: 0.5
         depthEnabled: true
@@ -39,13 +39,13 @@ ExtendedSceneEnvironment {
     glowHDRMinimumValue: 4.0
     glowHDRScale: 4.0
     glowBlendMode: ExtendedSceneEnvironment.GlowBlendMode.Screen
-    glowLevel: (/*ExtendedSceneEnvironment.GlowLevel.One
-                        |*/ ExtendedSceneEnvironment.GlowLevel.Two
-        | ExtendedSceneEnvironment.GlowLevel.Three
-        | ExtendedSceneEnvironment.GlowLevel.Four
-        | ExtendedSceneEnvironment.GlowLevel.Five
-        | ExtendedSceneEnvironment.GlowLevel.Six
-        | ExtendedSceneEnvironment.GlowLevel.Seven)
+    glowLevel: (ExtendedSceneEnvironment.GlowLevel.One
+                | ExtendedSceneEnvironment.GlowLevel.Two
+                | ExtendedSceneEnvironment.GlowLevel.Three
+                | ExtendedSceneEnvironment.GlowLevel.Four
+                | ExtendedSceneEnvironment.GlowLevel.Five
+                | ExtendedSceneEnvironment.GlowLevel.Six
+                | ExtendedSceneEnvironment.GlowLevel.Seven)
     backgroundMode: SceneEnvironment.SkyBox
     lightProbe: Texture {
         // textureData: ProceduralSkyTextureData {

@@ -21,6 +21,7 @@ set(FPS_GAME_QML
     qml/graphics/Scene.qml
     qml/objects/materials/MetalMaterial.qml
     qml/objects/Floor.qml
+    qml/objects/AK47.qml
     qml/physics/Physics.qml
     qml/player/FPSCamera.qml
     qml/player/FPSCharacterController.qml

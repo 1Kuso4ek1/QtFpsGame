@@ -59,6 +59,12 @@ View3D {
         }
     }
 
+    DynamicRigidBody {
+        position: Qt.vector3d(0, 700, 200)
+        collisionShapes: BoxShape { extents: Qt.vector3d(500, 100, 20) }
+        AK47 {}
+    }
+
     FPSCharacterController {
         id: character
 
@@ -71,6 +77,13 @@ View3D {
         FPSCamera {
             id: fpsCamera
             eulerRotation: view3d.cameraRotation
+
+            AK47 {
+                position: Qt.vector3d(20, -30, -40)
+                eulerRotation.x: -90
+                eulerRotation.y: 120
+                scale: Qt.vector3d(0.4, 0.4, 0.4)
+            }
         }
     }
 }
