@@ -1,0 +1,60 @@
+#pragma once
+#include <QObject>
+#include <QVector3D>
+#include <QtQml/qqmlregistration.h>
+
+class InputHandler;
+
+class PlayerController : public QObject
+{
+    Q_OBJECT
+    QML_ELEMENT
+
+    Q_PROPERTY(InputHandler* inputHandler READ inputHandler WRITE setInputHandler)
+    Q_PROPERTY(QVector3D movement READ movement NOTIFY inputChanged)
+    Q_PROPERTY(QVector3D cameraRotation READ cameraRotation NOTIFY cameraRotationChanged)
+    Q_PROPERTY(bool onGround READ onGround WRITE setOnGround)
+public:
+    enum InputState
+    {
+        None = 0x0, Forward = 0x1, Backward = 0x2, Left = 0x4, Right = 0x8,
+        Jump = 0x10, Sprint = 0x20
+    };
+    Q_DECLARE_FLAGS(InputStates, InputState)
+
+    explicit PlayerController(QObject* parent = nullptr);
+
+    InputHandler* inputHandler() const { return m_inputHandler; }
+    void setInputHandler(InputHandler* inputHandler);
+
+    QVector3D movement();
+    QVector3D cameraRotation() const { return m_cameraRotation; }
+
+    bool onGround() const { return m_onGround; }
+    void setOnGround(const bool onGround)
+    {
+        m_onGround = onGround;
+        emit inputChanged();
+    }
+
+signals:
+    void inputChanged();
+    void cameraRotationChanged();
+
+private:
+    static InputState keyToFlag(Qt::Key key) ;
+
+private:
+    InputHandler* m_inputHandler{};
+    InputStates m_inputState;
+
+    QVector3D m_cameraRotation;
+
+private:
+    float m_speed{200}, m_sprintMultiplier{2};
+    float m_jumpForce{3500}, m_jumpVelocity{};
+
+    bool m_onGround{};
+};
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(PlayerController::InputStates)
