@@ -62,16 +62,11 @@ QVector3D PlayerController::movement()
     if (m_inputState.testFlag(Right)) { dx += rightX; dz += rightZ; }
     if (m_inputState.testFlag(Left)) { dx -= rightX; dz -= rightZ; }
 
-    if (m_onGround) {
-        if (m_inputState.testFlag(Jump)) {
-            dy = m_jumpForce;
-        }
-        m_jumpVelocity = 0;
-    } else {
-        m_jumpVelocity = dy;
+    if (m_onGround && m_inputState.testFlag(Jump)) {
+        dy = m_jumpForce;
     }
 
-    if (const bool isMoving = dx != 0.0f && dy != 0.0f && dz != 0.0f;
+    if (const bool isMoving = dx != 0.0f || dy != 0.0f || dz != 0.0f;
         m_moving != isMoving) {
         m_moving = isMoving;
         emit movingChanged();

@@ -59,7 +59,7 @@ private:
 
 private:
     float m_speed{200}, m_sprintMultiplier{2};
-    float m_jumpForce{3500}, m_jumpVelocity{};
+    float m_jumpForce{5000};
 
     bool m_onGround{}, m_moving{};
 };
