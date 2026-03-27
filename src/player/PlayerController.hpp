@@ -14,6 +14,8 @@ class PlayerController : public QObject
     Q_PROPERTY(QVector3D movement READ movement NOTIFY inputChanged)
     Q_PROPERTY(QVector3D cameraRotation READ cameraRotation NOTIFY cameraRotationChanged)
     Q_PROPERTY(bool onGround READ onGround WRITE setOnGround)
+    Q_PROPERTY(bool moving READ moving NOTIFY movingChanged)
+    Q_PROPERTY(bool running READ running NOTIFY runningChanged)
 public:
     enum InputState
     {
@@ -37,9 +39,14 @@ public:
         emit inputChanged();
     }
 
+    bool moving() const { return m_moving; }
+    bool running() const { return m_inputState.testFlag(Sprint); }
+
 signals:
     void inputChanged();
     void cameraRotationChanged();
+    void movingChanged();
+    void runningChanged();
 
 private:
     static InputState keyToFlag(Qt::Key key) ;
@@ -54,7 +61,7 @@ private:
     float m_speed{200}, m_sprintMultiplier{2};
     float m_jumpForce{3500}, m_jumpVelocity{};
 
-    bool m_onGround{};
+    bool m_onGround{}, m_moving{};
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(PlayerController::InputStates)

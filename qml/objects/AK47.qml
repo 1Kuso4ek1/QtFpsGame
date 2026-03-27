@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick3D
 
+import FpsGame
+
 Node {
     id: node
 
@@ -9,22 +11,22 @@ Node {
         objectName: "Wood_ak-47"
         baseColorMap: Texture {
             id: woodColor
-            source: "file:resources/textures/ak47/Wood_ak-47_Base_Color.png"
+            textureData: AssetManager.getTexture("file:resources/textures/ak47/Wood_ak-47_Base_Color.png")
             generateMipmaps: true
         }
         normalMap: Texture {
             id: woodNormal
-            source: "file:resources/textures/ak47/Wood_ak-47_Normal_OpenGL.png"
+            textureData: AssetManager.getTexture("file:resources/textures/ak47/Wood_ak-47_Normal_OpenGL.png")
             generateMipmaps: true
         }
         roughnessMap: Texture {
             id: woodRoughness
-            source: "file:resources/textures/ak47/Wood_ak-47_Roughness.png"
+            textureData: AssetManager.getTexture("file:resources/textures/ak47/Wood_ak-47_Roughness.png")
             generateMipmaps: true
         }
         metalnessMap: Texture {
             id: woodMetalness
-            source: "file:resources/textures/ak47/Wood_ak-47_Metallic.png"
+            textureData: AssetManager.getTexture("file:resources/textures/ak47/Wood_ak-47_Metallic.png")
             generateMipmaps: true
         }
     }
@@ -33,22 +35,22 @@ Node {
         objectName: "Metall_ak-47"
         baseColorMap: Texture {
             id: metalColor
-            source: "file:resources/textures/ak47/Metall_ak-47_Base_Color.png"
+            textureData: AssetManager.getTexture("file:resources/textures/ak47/Metall_ak-47_Base_Color.png")
             generateMipmaps: true
         }
         normalMap: Texture {
             id: metalNormal
-            source: "file:resources/textures/ak47/Metall_ak-47_Normal_OpenGL.png"
+            textureData: AssetManager.getTexture("file:resources/textures/ak47/Metall_ak-47_Normal_OpenGL.png")
             generateMipmaps: true
         }
         roughnessMap: Texture {
             id: metalRoughness
-            source: "file:resources/textures/ak47/Metall_ak-47_Roughness.png"
+            textureData: AssetManager.getTexture("file:resources/textures/ak47/Metall_ak-47_Roughness.png")
             generateMipmaps: true
         }
         metalnessMap: Texture {
             id: metalMetalness
-            source: "file:resources/textures/ak47/Metall_ak-47_Metallic.png"
+            textureData: AssetManager.getTexture("file:resources/textures/ak47/Metall_ak-47_Metallic.png")
             generateMipmaps: true
         }
     }

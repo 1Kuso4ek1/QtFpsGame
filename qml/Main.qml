@@ -16,11 +16,14 @@ ApplicationWindow {
 
     title: "FPS Game"
 
+    LoadingScreen {
+        anchors.fill: parent
+    }
+
     Scene {
         id: scene
 
-        cameraRotation: player.cameraRotation
-        movement: player.movement
+        player: player
 
         anchors.fill: parent
     }

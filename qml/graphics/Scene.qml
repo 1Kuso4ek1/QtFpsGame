@@ -9,8 +9,7 @@ import "../objects/materials"
 View3D {
     id: view3d
 
-    required property var cameraRotation
-    required property var movement
+    required property var player
 
     property alias character: character
 
@@ -72,16 +71,19 @@ View3D {
         eulerRotation.y: fpsCamera.eulerRotation.y
 
         gravity: physics.gravity
-        movement: view3d.movement
+        movement: view3d.player.movement
 
         FPSCamera {
             id: fpsCamera
-            eulerRotation: view3d.cameraRotation
+
+            position: Qt.vector3d(0, 55, 0)
+            eulerRotation: view3d.player.cameraRotation
 
             AK47 {
                 position: Qt.vector3d(20, -30, -40)
-                eulerRotation.x: -90
-                eulerRotation.y: 120
+
+                //eulerRotation.x: -90
+                eulerRotation.y: 90
                 scale: Qt.vector3d(0.4, 0.4, 0.4)
             }
         }

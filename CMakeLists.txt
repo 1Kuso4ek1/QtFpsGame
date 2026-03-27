@@ -10,13 +10,18 @@ qt_standard_project_setup(REQUIRES 6.10.0)
 
 set(FPS_GAME_SOURCES
     src/main.cpp
+    src/assets/AssetManager.cpp
+    src/assets/AssetManager.hpp
     src/input/InputHandler.cpp
     src/input/InputHandler.hpp
     src/player/PlayerController.cpp
     src/player/PlayerController.hpp
+    src/assets/texture/Texture.cpp
+    src/assets/texture/Texture.hpp
 )
 
 set(FPS_GAME_QML
+    qml/graphics/AsyncTexture.qml
     qml/graphics/Environment.qml
     qml/graphics/Scene.qml
     qml/objects/materials/MetalMaterial.qml
@@ -26,6 +31,7 @@ set(FPS_GAME_QML
     qml/player/FPSCamera.qml
     qml/player/FPSCharacterController.qml
     qml/player/Player.qml
+    qml/ui/LoadingScreen.qml
     qml/Main.qml
 )
 
@@ -58,6 +64,7 @@ set_target_properties(FpsGameApp PROPERTIES
 )
 
 target_include_directories(FpsGameApp PRIVATE
+    src/assets
     src/input
     src/player
 )

@@ -15,6 +15,9 @@ void PlayerController::setInputHandler(InputHandler* inputHandler)
                 {
                     const auto flag = keyToFlag(static_cast<Qt::Key>(key));
                     m_inputState.setFlag(flag, true);
+                    if (flag == Sprint) {
+                        emit runningChanged();
+                    }
 
                     emit inputChanged();
                 });
@@ -23,6 +26,9 @@ void PlayerController::setInputHandler(InputHandler* inputHandler)
                 {
                     const auto flag = keyToFlag(static_cast<Qt::Key>(key));
                     m_inputState.setFlag(flag, false);
+                    if (flag == Sprint) {
+                        emit runningChanged();
+                    }
 
                     emit inputChanged();
                 });
@@ -65,7 +71,18 @@ QVector3D PlayerController::movement()
         m_jumpVelocity = dy;
     }
 
-    return { dx * speed, dy, dz * speed };
+    if (const bool isMoving = dx != 0.0f && dy != 0.0f && dz != 0.0f;
+        m_moving != isMoving) {
+        m_moving = isMoving;
+        emit movingChanged();
+    }
+
+    QVector3D vec{ dx, 0, dz };
+    vec.normalize();
+    vec *= speed;
+    vec.setY(dy);
+
+    return vec;
 }
 
 PlayerController::InputState PlayerController::keyToFlag(const Qt::Key key)

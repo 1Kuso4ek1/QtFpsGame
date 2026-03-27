@@ -5,8 +5,8 @@ ExtendedSceneEnvironment {
     tonemapMode: SceneEnvironment.TonemapModeAces
     aoEnabled: true
     aoDither: true
-    aoDistance: 80
-    aoStrength: 80
+    aoDistance: 100
+    aoStrength: 100
     aoSoftness: 50
     aoSampleRate: 4
     // lensFlareEnabled: true
@@ -28,6 +28,8 @@ ExtendedSceneEnvironment {
         transmitCurve: 2.0
         transmitEnabled: true
     }*/
+    vignetteEnabled: true
+    vignetteRadius: 0.1
     specularAAEnabled: true
     fxaaEnabled: true
     glowEnabled: true
