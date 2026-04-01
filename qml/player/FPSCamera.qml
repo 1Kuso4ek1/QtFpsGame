@@ -5,7 +5,7 @@ PerspectiveCamera {
     id: perspectiveCamera
 
     fieldOfView: 90
-    clipFar: 10000.0
-    clipNear: 0.01
+    clipFar: 15000.0
+    clipNear: 0.1
     frustumCullingEnabled: true
 }

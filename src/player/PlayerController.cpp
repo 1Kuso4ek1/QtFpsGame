@@ -11,44 +11,22 @@ void PlayerController::setInputHandler(InputHandler* inputHandler)
         m_inputHandler = inputHandler;
 
         connect(m_inputHandler, &InputHandler::keyPressed,
-                this, [this](const int key)
-                {
-                    const auto flag = keyToFlag(static_cast<Qt::Key>(key));
-                    m_inputState.setFlag(flag, true);
-                    if (flag == Sprint) {
-                        emit runningChanged();
-                    }
-
-                    emit inputChanged();
-                });
+                this, &PlayerController::onKeyPressed);
         connect(m_inputHandler, &InputHandler::keyReleased,
-                this, [this](const int key)
-                {
-                    const auto flag = keyToFlag(static_cast<Qt::Key>(key));
-                    m_inputState.setFlag(flag, false);
-                    if (flag == Sprint) {
-                        emit runningChanged();
-                    }
-
-                    emit inputChanged();
-                });
+                this, &PlayerController::onKeyReleased);
+        connect(m_inputHandler, &InputHandler::mouseButtonPressed,
+                this, &PlayerController::onMouseButtonPressed);
+        connect(m_inputHandler, &InputHandler::mouseButtonReleased,
+                this, &PlayerController::onMouseButtonReleased);
         connect(m_inputHandler, &InputHandler::mouseMoved,
-                this, [this](const qreal dx, const qreal dy)
-                {
-                    m_cameraRotation.setY(m_cameraRotation.y() - static_cast<float>(dx));
-                    m_cameraRotation.setX(m_cameraRotation.x() - static_cast<float>(dy));
-                    m_cameraRotation.setX(std::max(-89.0f, std::min(89.0f, m_cameraRotation.x())));
-
-                    emit cameraRotationChanged();
-                    emit inputChanged();
-                });
+                this, &PlayerController::onMouseMoved);
     }
 }
 
 QVector3D PlayerController::movement()
 {
     const auto speed = m_speed * (m_inputState.testFlag(Sprint) ? m_sprintMultiplier : 1.0f);
-    const auto radYaw = m_cameraRotation.y() * M_PIf / 180.0f;
+    const auto radYaw = m_cameraRotation.y() * static_cast<float>(M_PI) / 180.0f;
 
     const auto forwardX = std::sin(radYaw);
     const auto forwardZ = std::cos(radYaw);
@@ -80,6 +58,60 @@ QVector3D PlayerController::movement()
     return vec;
 }
 
+void PlayerController::onKeyPressed(const int key)
+{
+    const auto flag = keyToFlag(static_cast<Qt::Key>(key));
+    m_inputState.setFlag(flag, true);
+    if (flag == Sprint) {
+        emit runningChanged();
+    }
+
+    emit inputChanged();
+}
+
+void PlayerController::onKeyReleased(const int key)
+{
+    const auto flag = keyToFlag(static_cast<Qt::Key>(key));
+    m_inputState.setFlag(flag, false);
+    if (flag == Sprint) {
+        emit runningChanged();
+    }
+
+    emit inputChanged();
+}
+
+void PlayerController::onMouseButtonPressed(const int button)
+{
+    const auto flag = buttonToFlag(static_cast<Qt::MouseButton>(button));
+    m_inputState.setFlag(flag, true);
+    if (flag == Shoot) {
+        emit shootingChanged();
+    }
+
+    emit inputChanged();
+}
+
+void PlayerController::onMouseButtonReleased(const int button)
+{
+    const auto flag = buttonToFlag(static_cast<Qt::MouseButton>(button));
+    m_inputState.setFlag(flag, false);
+    if (flag == Shoot) {
+        emit shootingChanged();
+    }
+
+    emit inputChanged();
+}
+
+void PlayerController::onMouseMoved(const qreal dx, const qreal dy)
+{
+    m_cameraRotation.setY(m_cameraRotation.y() - static_cast<float>(dx));
+    m_cameraRotation.setX(m_cameraRotation.x() - static_cast<float>(dy));
+    m_cameraRotation.setX(std::max(-89.0f, std::min(89.0f, m_cameraRotation.x())));
+
+    emit cameraRotationChanged();
+    emit inputChanged();
+}
+
 PlayerController::InputState PlayerController::keyToFlag(const Qt::Key key)
 {
     switch (key) {
@@ -89,6 +121,14 @@ PlayerController::InputState PlayerController::keyToFlag(const Qt::Key key)
     case Qt::Key_A: return Left;
     case Qt::Key_Space: return Jump;
     case Qt::Key_Shift: return Sprint;
+    default: return None;
+    }
+}
+
+PlayerController::InputState PlayerController::buttonToFlag(const Qt::MouseButton button)
+{
+    switch (button) {
+    case Qt::LeftButton: return Shoot;
     default: return None;
     }
 }

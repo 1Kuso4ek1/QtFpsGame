@@ -4,9 +4,12 @@ project(FpsGame VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Quick3D Quick3DPhysics WaylandCompositor)
+find_package(Qt6 REQUIRED COMPONENTS
+    Quick Quick3D Quick3DPhysics Concurrent
+    SpatialAudio
+)
 
-qt_standard_project_setup(REQUIRES 6.10.0)
+qt_standard_project_setup(REQUIRES 6.11.0)
 
 set(FPS_GAME_SOURCES
     src/main.cpp
@@ -25,8 +28,9 @@ set(FPS_GAME_QML
     qml/graphics/Environment.qml
     qml/graphics/Scene.qml
     qml/objects/materials/MetalMaterial.qml
-    qml/objects/Floor.qml
     qml/objects/AK47.qml
+    qml/objects/Floor.qml
+    qml/objects/Map.qml
     qml/physics/Physics.qml
     qml/player/FPSCamera.qml
     qml/player/FPSCharacterController.qml
@@ -70,7 +74,8 @@ target_include_directories(FpsGameApp PRIVATE
 )
 
 target_link_libraries(FpsGameApp PRIVATE
-    Qt6::Quick Qt6::Quick3D Qt6::Quick3DPhysics Qt6::WaylandCompositor
+    Qt6::Quick Qt6::Quick3D Qt6::Quick3DPhysics
+    Qt6::Concurrent Qt6::SpatialAudio
 )
 
 include(GNUInstallDirs)

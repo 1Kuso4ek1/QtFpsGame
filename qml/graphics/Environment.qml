@@ -5,17 +5,17 @@ ExtendedSceneEnvironment {
     tonemapMode: SceneEnvironment.TonemapModeAces
     aoEnabled: true
     aoDither: true
-    aoDistance: 100
+    aoDistance: 60
     aoStrength: 100
     aoSoftness: 50
     aoSampleRate: 4
-    // lensFlareEnabled: true
-    // lensFlareBloomBias: 7.9
-    // lensFlareBloomScale: 1
-    // lensFlareApplyDirtTexture: true
-    // lensFlareApplyStarburstTexture: true
-    // lensFlareBlurAmount: 20
-    // lensFlareDistortion: 4
+    lensFlareEnabled: true
+    lensFlareBloomBias: 7.9
+    lensFlareBloomScale: 1
+    lensFlareApplyDirtTexture: true
+    lensFlareApplyStarburstTexture: true
+    lensFlareBlurAmount: 20
+    lensFlareDistortion: 4
     ditheringEnabled: true
     // depthOfFieldEnabled: true
     // depthOfFieldFocusDistance: 400
@@ -32,6 +32,12 @@ ExtendedSceneEnvironment {
     vignetteRadius: 0.1
     specularAAEnabled: true
     fxaaEnabled: true
+    //ssrEnabled: true
+    //ssgiIndirectLightEnabled: true
+    //ssgiBufferSizeFactor: 0.1
+    //ssgiEnabled: true
+    //ssgiSimulatedBounceEnabled: false
+    //ssgiSampleCount: 4
     glowEnabled: true
     glowQualityHigh: true
     glowUseBicubicUpscale: true

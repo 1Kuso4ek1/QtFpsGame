@@ -4,6 +4,7 @@ import QtQuick.Controls
 import "graphics"
 import "physics"
 import "player"
+import "ui"
 
 ApplicationWindow {
     id: appWindow
@@ -18,14 +19,26 @@ ApplicationWindow {
 
     LoadingScreen {
         anchors.fill: parent
+
+        onLoadingFinished: scene.visible = true
     }
 
     Scene {
         id: scene
 
         player: player
+        visible: false
 
         anchors.fill: parent
+    }
+
+    Rectangle {
+        anchors.centerIn: parent
+
+        width: 4
+        height: 4
+
+        color: "green"
     }
 
     Player {
@@ -43,6 +56,5 @@ ApplicationWindow {
 
         hoverEnabled: true
         propagateComposedEvents: true
-        acceptedButtons: Qt.NoButton
     }
 }

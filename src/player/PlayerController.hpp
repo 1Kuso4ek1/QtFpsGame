@@ -16,11 +16,12 @@ class PlayerController : public QObject
     Q_PROPERTY(bool onGround READ onGround WRITE setOnGround)
     Q_PROPERTY(bool moving READ moving NOTIFY movingChanged)
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
+    Q_PROPERTY(bool shooting READ shooting NOTIFY shootingChanged)
 public:
     enum InputState
     {
         None = 0x0, Forward = 0x1, Backward = 0x2, Left = 0x4, Right = 0x8,
-        Jump = 0x10, Sprint = 0x20
+        Jump = 0x10, Sprint = 0x20, Shoot = 0x40
     };
     Q_DECLARE_FLAGS(InputStates, InputState)
 
@@ -41,15 +42,25 @@ public:
 
     bool moving() const { return m_moving; }
     bool running() const { return m_inputState.testFlag(Sprint); }
+    bool shooting() const { return m_inputState.testFlag(Shoot); }
 
 signals:
     void inputChanged();
     void cameraRotationChanged();
     void movingChanged();
     void runningChanged();
+    void shootingChanged();
+
+private slots:
+    void onKeyPressed(int key);
+    void onKeyReleased(int key);
+    void onMouseButtonPressed(int button);
+    void onMouseButtonReleased(int button);
+    void onMouseMoved(qreal dx, qreal dy);
 
 private:
-    static InputState keyToFlag(Qt::Key key) ;
+    static InputState keyToFlag(Qt::Key key);
+    static InputState buttonToFlag(Qt::MouseButton button);
 
 private:
     InputHandler* m_inputHandler{};
@@ -58,8 +69,8 @@ private:
     QVector3D m_cameraRotation;
 
 private:
-    float m_speed{200}, m_sprintMultiplier{2};
-    float m_jumpForce{5000};
+    float m_speed{500}, m_sprintMultiplier{2};
+    float m_jumpForce{8000};
 
     bool m_onGround{}, m_moving{};
 };

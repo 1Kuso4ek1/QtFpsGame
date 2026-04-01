@@ -11,6 +11,6 @@ StaticRigidBody {
 
     Model {
         source: "#Cube"
-        materials: [ MetalMaterial { id: metalMaterial } ]
+        materials: [ MetalMaterial {} ]
     }
 }

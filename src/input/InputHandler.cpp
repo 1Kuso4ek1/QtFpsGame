@@ -39,6 +39,10 @@ bool InputHandler::eventFilter(QObject* watched, QEvent* event)
             emit keyPressed(dynamic_cast<QKeyEvent*>(event)->key());
         } else if (event->type() == QEvent::KeyRelease) {
             emit keyReleased(dynamic_cast<QKeyEvent*>(event)->key());
+        } else if (event->type() == QEvent::MouseButtonPress) {
+            emit mouseButtonPressed(dynamic_cast<QMouseEvent*>(event)->button());
+        } else if (event->type() == QEvent::MouseButtonRelease) {
+            emit mouseButtonReleased(dynamic_cast<QMouseEvent*>(event)->button());
         } else if (event->type() == QEvent::MouseMove && m_mouseGrabbed) {
             const auto* mouseEvent = dynamic_cast<QMouseEvent*>(event);
 

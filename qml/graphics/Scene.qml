@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick3D
 import QtQuick3D.Physics
+import QtQuick3D.SpatialAudio
+import QtMultimedia
 
 import "../player"
 import "../objects"
@@ -16,34 +18,118 @@ View3D {
     camera: fpsCamera
     environment: Environment {}
 
+    AudioEngine {
+        outputMode: AudioEngine.Headphone
+    }
+
     Physics {
         id: physics
         scene: view3d.scene
+        running: view3d.visible
     }
 
     DirectionalLight {
         eulerRotation.x: -45
         eulerRotation.y: -45
 
-        ambientColor: "#373737"
+        brightness: 1
+        ambientColor: "black"
 
         castsShadow: true
-        softShadowQuality: Light.Hard
+        shadowFactor: 100
+        softShadowQuality: Light.PCF16
+        use32BitShadowmap: true
+        shadowMapFar: 10000
         shadowMapQuality: Light.ShadowMapQualityUltra
         shadowBias: 5
+        csmNumSplits: 3
     }
 
-    Floor {}
+    StaticRigidBody {
+        scale: Qt.vector3d(40, 40, 40)
+        collisionShapes: TriangleMeshShape {
+            source: "file:resources/meshes/town_Plane_001_mesh.mesh"
+        }
 
-    DynamicRigidBody {
-        position: Qt.vector3d(0, 300, 200)
-        collisionShapes: BoxShape {}
+        Map {
+            SpatialSound {
+                position: Qt.vector3d(0, 50, 0)
+                source: "file:resources/audio/music/test.mp3"
+                distanceModel: SpatialSound.Linear
+                volume: 0.1
+            }
 
-        Model {
-            source: "#Cube"
-            materials: [PrincipledMaterial {
-                baseColor: "#0000ff"; roughness: 0.7; metalness: 0.3
-            }]
+            AudioRoom {
+                dimensions: Qt.vector3d(7000, 1000, 6000)
+                backMaterial: AudioRoom.Material.Transparent
+                frontMaterial: AudioRoom.Material.Metal
+                leftMaterial: AudioRoom.Material.Metal
+                rightMaterial: AudioRoom.Material.Metal
+                ceilingMaterial: AudioRoom.Material.Transparent
+                floorMaterial: AudioRoom.Material.ConcreteBlockCoarse
+                reverbGain: 0.3
+                reflectionGain: 0.3
+                reverbBrightness: 0.3
+            }
+        }
+    }
+
+    Text {
+        text: `position: ${character.position}`
+        font.pixelSize: 24
+        color: "white"
+    }
+
+    Rectangle {
+        id: animation
+
+        width: 512
+        height: 512
+
+        visible: false
+
+        MediaPlayer {
+            source: "file:resources/textures/animated/ishowspeed-ishowspeed-fortnite.mp4"
+            loops: MediaPlayer.Infinite
+            autoPlay: true
+            videoOutput: videoOutput
+        }
+
+        VideoOutput {
+            id: videoOutput
+            anchors.fill: parent
+        }
+    }
+
+    Repeater3D {
+        model: 100
+        delegate: DynamicRigidBody {
+            position: Qt.vector3d(0, 300 + index * 100, 200)
+            collisionShapes: BoxShape {}
+
+            function playSound() {
+                sound.stop()
+                sound.play()
+            }
+
+            SpatialSound {
+                id: sound
+                source: "file:resources/audio/sounds/ishowspeed-blackk.mp3"
+                autoPlay: false
+                distanceCutoff: 2000
+            }
+
+            Model {
+                source: "#Cube"
+                pickable: true
+                materials: [PrincipledMaterial {
+                    id: basicMaterial
+                    /*baseColor: "#0000ff";*/ roughness: 0.7; metalness: 0.3
+                    baseColorMap: Texture {
+                        sourceItem: animation
+                    }
+                }]
+            }
         }
     }
 
@@ -52,6 +138,7 @@ View3D {
         collisionShapes: SphereShape {}
         Model {
             source: "#Sphere"
+            pickable: true
             materials: [PrincipledMaterial {
                 baseColor: "#ffffff"; emissiveFactor: Qt.vector3d(8.0, 8.0, 8.0)
             }]
@@ -86,6 +173,34 @@ View3D {
             }
         }
 
+        property var footsteps: []
+
+        Component.onCompleted: {
+            for (let i = 1; i <= 4; i++) {
+                footsteps.push(
+                    Qt.createQmlObject(`
+                        import QtQuick3D.SpatialAudio
+
+                        SpatialSound {
+                            source: "file:resources/audio/sounds/footsteps/footstep${i}.ogg"
+                            autoPlay: false
+                        }
+                    `, character)
+                )
+            }
+        }
+
+        Timer {
+            running: character.movement.length() > 0.0 && character.onGround
+            repeat: true
+            triggeredOnStart: true
+            interval: view3d.player.running ? 350 : 550
+            onTriggered: {
+                const index = Math.floor(Math.random() * 4)
+                character.footsteps[index].play()
+            }
+        }
+
         FPSCamera {
             id: fpsCamera
 
@@ -112,6 +227,10 @@ View3D {
             property real swaySmoothing: 0.08
             property real swayAmount: 0.15
             property real swayReturnSpeed: 0.1
+
+            property real recoilZ: 0.0
+
+            property bool wasGrounded: true
 
             Behavior on weaponFallOffsetY {
                 NumberAnimation {
@@ -181,25 +300,28 @@ View3D {
                     fpsCamera.wasGrounded = isGrounded
 
                     if (isMoving && isGrounded) {
-                        const bobMult = isRunning ? 1.8 : 1.0
-                        fpsCamera.weaponBobX = Math.sin(fpsCamera.bobState * fpsCamera.bobFrequency) * 0.08 * bobMult
-                        fpsCamera.weaponBobY = Math.cos(fpsCamera.bobState * fpsCamera.bobFrequency * 2) * 0.06 * bobMult
-                        fpsCamera.weaponBobRotate = Math.sin(fpsCamera.bobState * fpsCamera.bobFrequency) * 0.3 * bobMult
+                        const bobMultiplier = isRunning ? 1.8 : 1.0
+                        fpsCamera.weaponBobX = Math.sin(fpsCamera.bobState * fpsCamera.bobFrequency) * 0.08 * bobMultiplier
+                        fpsCamera.weaponBobY = Math.cos(fpsCamera.bobState * fpsCamera.bobFrequency * 2) * 0.06 * bobMultiplier
+                        fpsCamera.weaponBobRotate = Math.sin(fpsCamera.bobState * fpsCamera.bobFrequency) * 0.3 * bobMultiplier
                     } else {
                         fpsCamera.weaponBobX += (0 - fpsCamera.weaponBobX) * 0.15
                         fpsCamera.weaponBobY += (0 - fpsCamera.weaponBobY) * 0.15
                         fpsCamera.weaponBobRotate += (0 - fpsCamera.weaponBobRotate) * 0.15
                     }
+
+                    fpsCamera.recoilZ += (0 - fpsCamera.recoilZ) * 0.15
                 }
             }
 
-            property bool wasGrounded: true
+            AudioListener {}
 
             AK47 {
+                id: weapon
                 position: Qt.vector3d(
                     20 + fpsCamera.weaponBobX * 10,
                     -35 + fpsCamera.weaponBobY * 10 + fpsCamera.weaponFallOffsetY,
-                    -40
+                    -40 + fpsCamera.recoilZ
                 )
                 eulerRotation: Qt.vector3d(
                     -fpsCamera.swayX * 2,
@@ -207,6 +329,91 @@ View3D {
                     fpsCamera.weaponBobRotate * 2 - fpsCamera.swayY * 3
                 )
                 scale: Qt.vector3d(0.4, 0.4, 0.4)
+
+                Node {
+                    id: muzzleFlashNode
+                    position: Qt.vector3d(210, 60, 0)
+                    visible: false
+
+                    function fire() {
+                        let randomScale = 0.7 + Math.random() * 0.2
+                        flashModel.eulerRotation.x = Math.random() * 360
+                        flashModel.scale = Qt.vector3d(randomScale * 1.5, randomScale, randomScale)
+                        muzzleFlashNode.visible = true
+
+                        hideTimer.restart()
+                    }
+
+                    Timer {
+                        id: hideTimer
+                        interval: 30
+                        repeat: false
+                        onTriggered: muzzleFlashNode.visible = false
+                    }
+                    Model {
+                        id: flashModel
+                        source: "#Sphere"
+                        materials: [ PrincipledMaterial {
+                            baseColor: "#ffff88"
+                            emissiveFactor: Qt.vector3d(16.0, 8.0, 0.0)
+                            // baseColorMap: Texture { source: "file:resources/textures/muzzle.png" }
+                            // alphaMode: PrincipledMaterial.Blend
+                        }]
+                    }
+
+                    PointLight {
+                        color: "#ffa700"
+                        brightness: 10.0
+                        quadraticFade: 2.0
+                        castsShadow: false
+                    }
+                }
+
+                SpatialSound {
+                    id: shot
+                    source: "file:resources/audio/sounds/ak47/shot.mp3"
+                    position: Qt.vector3d(200, 50, 0)
+                    autoPlay: false
+                }
+
+                Timer {
+                    running: view3d.player.shooting
+                    repeat: true
+                    triggeredOnStart: true
+                    interval: 130
+                    onTriggered: {
+                        shot.stop()
+                        shot.play()
+
+                        fpsCamera.recoilZ = 22.0
+                        muzzleFlashNode.fire()
+
+                        let pickResult = view3d.pick(view3d.width / 2, view3d.height / 2)
+
+                        if (pickResult && pickResult.objectHit) {
+                            let hitModel = pickResult.objectHit
+                            let hitBody = hitModel.parent
+
+                            if (hitBody) {
+                                let hitPos = pickResult.scenePosition
+                                let camPos = fpsCamera.scenePosition
+
+                                let dirX = hitPos.x - camPos.x
+                                let dirY = hitPos.y - camPos.y
+                                let dirZ = hitPos.z - camPos.z
+
+                                let length = Math.sqrt(dirX*dirX + dirY*dirY + dirZ*dirZ)
+                                dirX /= length; dirY /= length; dirZ /= length;
+
+                                let impactForce = 1500000
+
+                                let impulse = Qt.vector3d(dirX * impactForce, dirY * impactForce, dirZ * impactForce)
+                                hitBody.applyCentralImpulse(impulse)
+                                hitBody.playSound()
+                            }
+                        }
+                    }
+                }
             }
         }
     }

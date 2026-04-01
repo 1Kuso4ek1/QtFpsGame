@@ -6,6 +6,8 @@ import FpsGame
 Rectangle {
     id: loadingScreen
 
+    signal loadingFinished()
+
     color: "#0a0a0c"
     z: 100
 
@@ -21,6 +23,7 @@ Rectangle {
 
         function onLoadingFinished() {
             loadingScreen.opacity = 0.0
+            loadingScreen.loadingFinished()
         }
     }
 
@@ -46,6 +49,8 @@ Rectangle {
             from: 0.0
             to: 1.0
             value: AssetManager.progress
+
+            Behavior on value { NumberAnimation { duration: 300; easing.type: Easing.InOutQuad } }
 
             anchors.horizontalCenter: parent.horizontalCenter
         }
